@@ -25,7 +25,6 @@ async function loginUser(req, res) {
     const payload = {
       id: checkUser.id,
     };
-
     const token = jwt.sign(payload, process.env.JSON_TOKEN_SECRET); // Token will be valid for a day long
 
     // return the created data with token

@@ -9,6 +9,7 @@ const verifyJWT = async (req, res, next) => {
 
     if (!token)
       return res.status(401).json({ message: "Requires Access Token" });
+   
     jwt.verify(token, process.env.JSON_TOKEN_SECRET, (error, decoded) => {
       if (error)
         return res.status(401).json({ message: "User authentication failed" });

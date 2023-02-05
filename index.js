@@ -1,7 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const helmet = require("helmet");
-const morgan = require("morgan");
 const cors = require("cors");
 const connectToDB = require("./config/dbConn");
 
@@ -23,8 +21,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.use(helmet()); // secure vulnerable information from http request and response url
-app.use(morgan());
 
 // API Routes
 
