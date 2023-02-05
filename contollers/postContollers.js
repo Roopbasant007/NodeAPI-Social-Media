@@ -1,4 +1,5 @@
 const Post = require("../models/postSchema");
+const User = require("../models/userSchema");
 const Reaction = require("../models/reactionSchema");
 const Comment = require("../models/commentSchema");
 
@@ -23,10 +24,7 @@ async function createPost(req, res) {
     const postId = String(newPost._id);
 
     const post = await Post.findOne({ _id: { $eq: postId } });
-
-    // create like table also
-
-    console.log(postId);
+    const user = await User.findById(req.id);
 
     const reactions = new Reaction({
       postId: postId,
@@ -36,7 +34,17 @@ async function createPost(req, res) {
 
     const { comment, likes, unlikes, updatedAt, __v, ...other } = post._doc;
 
-    return res.status(201).json(other);
+    const createdBy = user.userName;
+
+    return res.status(201).json({
+      CreatedBlog: {
+        id: other._id,
+        title: other.title,
+        desc: other.desc,
+        createdBy: createdBy,
+        createdAt: other.createdAt,
+      },
+    });
   } catch (error) {
     console.log(error);
     res.status(501).json("internal Server Error");
@@ -53,7 +61,7 @@ async function deletePost(req, res) {
 
     await Reaction.findOneAndDelete({ postId: { $eq: postId } });
 
-    await Commnent.deleteMany({ postId: { $eq: postId } });
+    await Comment.deleteMany({ postId: { $eq: postId } });
 
     return res
       .status(201)
@@ -209,6 +217,58 @@ async function getPost(req, res) {
   }
 }
 
+// Update Post
+
+async function updatePost(req, res) {
+  try {
+    const { title, desc } = req.body;
+
+    // check whether title or desc is empty
+    if (!title || !desc)
+      return res
+        .status(403)
+        .json({ message: "A post shouldn't have an empty title and desc" });
+
+    const updatedPost = await Post.findByIdAndUpdate(req.params.id, {
+      title: title,
+      desc: desc,
+    });
+
+    // formatting the result need to return to client side
+    const { comment, likes, unlikes, userId, __v, ...other } = updatedPost._doc;
+    const user = await User.findById(req.id);
+    const createdBy = user.userName;
+    return res.status(200).json({
+      message: "Blog has been updated successfully",
+      UpdatedBlog: {
+        id: other._id,
+        title: other.title,
+        desc: other.desc,
+        createdBy: createdBy,
+        createdAt: other.createdAt,
+        updatedAt: other.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(501).json({ message: "Internal Server Error" });
+  }
+}
+
+// get all the post
+
+async function getBlogs(req, res) {
+  try {
+    const allBlogs = await Post.find();
+    if (!allBlogs)
+      return res.status(200).json({ message: "No, Blog exist at the moment" });
+    return res.status(200).json(allBlogs);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   createPost,
   likePost,
@@ -216,4 +276,6 @@ module.exports = {
   commentPost,
   deletePost,
   getPost,
+  updatePost,
+  getBlogs,
 };

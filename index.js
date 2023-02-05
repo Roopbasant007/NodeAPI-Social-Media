@@ -32,7 +32,7 @@ app.use("/api", authRouter);
 app.use("/api/user", regisRouter);
 app.use("/api", userRouter);
 
-const PORT = process.env.SERVER_PORT || 3000;
+const PORT = process.env.SERVER_PORT && 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port: ${PORT}`);
 });

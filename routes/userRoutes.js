@@ -18,6 +18,8 @@ const {
   commentPost,
   deletePost,
   getPost,
+  updatePost,
+  getBlogs,
 } = require("../contollers/postContollers");
 
 userRouter.get("/user", verifyJWT, getUserProfile);
@@ -25,11 +27,13 @@ userRouter.post("/follow/:id", verifyJWT, followRequest);
 userRouter.post("/unfollow/:id", verifyJWT, unFollowRequest);
 
 // User Router for Post
-userRouter.post("/posts", verifyJWT, createPost);
+userRouter.post("/blog", verifyJWT, createPost);
 userRouter.post("/like/:id", verifyJWT, likePost);
 userRouter.post("/unlike/:id", verifyJWT, unlikePost);
 userRouter.post("/comment/:id", verifyJWT, commentPost);
-userRouter.post("/posts/delete/:id", verifyJWT, deletePost);
-userRouter.get("/posts/:id", verifyJWT, getPost);
+userRouter.post("/blog/delete/:id", verifyJWT, deletePost);
+userRouter.get("/blog/:id", verifyJWT, getPost);
+userRouter.post("/blog/update/:id", verifyJWT, updatePost);
+userRouter.post("/getblogs", verifyJWT, getBlogs);
 
 module.exports = userRouter;
